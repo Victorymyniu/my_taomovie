@@ -14,7 +14,7 @@
     </header>
     <section>
       <div v-show="selnav"  class="content">
-        热映电影
+        热映电影哈哈哈哈
       </div>
       <div v-show="!selnav"  class="content">
         即将上映
