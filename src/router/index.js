@@ -4,7 +4,6 @@ import Home from '@/views/Home'
 import Cinema from '@/views/Cinema'
 import Me from '@/views/Me'
 // import HelloWorld from '@/components/HelloWorld'
-import CityList from '@/components/CityList'
 
 Vue.use(Router)
 

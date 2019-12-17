@@ -5,20 +5,20 @@
 			<span class="close-city" @click="closeCityList">×</span>
     </div>
     <mt-index-list>
-      <mt-index-section :index="item.title" v-for="(item, index) in cityArr" :key="index">
-        <mt-cell :title="i" v-for="(i,index) in item.lists" :key="index" @click.native="selectedCity(i)"></mt-cell>
+      <mt-index-section :index="item.title" v-for="(item, index) in cityList" :key="index">
+        <mt-cell :title="name.regionName" v-for="(name,index) in item.list" :key="index" @click.native="selectedCity(name.regionName)"></mt-cell>
       </mt-index-section>
     </mt-index-list>
   </div>
 </template>
 
 <script>
-import cityData from "../assets/city.json"
+// import cityData from "@/assets/city.json"
 export default {
   name: 'CityIndexList',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      cityList: []
     }
   },
   created (){
@@ -26,15 +26,37 @@ export default {
   },
   methods: {
     getCityInfo() {
-      // 读取json文件
-      this.cityArr = cityData.city
-      // this.$axios.get('/movie/city')
-      // .then( response => {
-      //   console.log(response)
-      // })
-      // .catch( error => {
-      //   console.log(error)
-      // })
+      this.$axios.get('/movie/city')
+      .then( response => {
+        const data = response.data
+        const cityObj = data.data.data.returnValue
+        const cityTitle = Object.keys(cityObj)
+        this.cityList.push({
+          title: '热门',
+          list: [{
+            regionName: '北京',
+            id: 1,
+            rN: 'bj'
+          }, {
+            regionName: '上海',
+            id: 2,
+            rN: 'sh'
+          }, {
+            regionName: '广州',
+            id: 3,
+            rN: 'gz'
+          }]
+        })
+        cityTitle.forEach((item) => {
+          this.cityList.push({
+            title: item,
+            list: cityObj[item]
+          })
+        })
+      })
+      .catch( error => {
+        console.log(error)
+      })
     },
     selectedCity(name) {
       console.log(name)

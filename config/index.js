@@ -10,7 +10,23 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      '/movie': {
+        target: 'http://localhost:9091',
+        changeOrigin: 'true',
+        // pathRewrite: {
+        //   '^/movie': '/movie'
+        // }
+      }
+      // '/movie/coming': 'http://localhost:9091',
+      // '/movie/hot': 'http://localhost:9091',
+      // '/movie/info': 'http://localhost:9091',
+      // '/movie/evaluation': 'http://localhost:9091',
+      // '/movie/cinema': 'http://localhost:9091',
+      // '/movie/cinema_detail': 'http://localhost:9091',
+      // '/movie/swiper': 'http://localhost:9091',
+      // '/movie/city': 'http://localhost:9091'
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST

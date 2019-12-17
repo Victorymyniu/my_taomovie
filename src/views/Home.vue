@@ -14,7 +14,7 @@
     </header>
     <section>
       <div v-show="selnav"  class="content">
-        热映电影哈哈哈哈
+        <swiper :imgs="imgs"></swiper>
       </div>
       <div v-show="!selnav"  class="content">
         即将上映
@@ -25,27 +25,39 @@
 
 <script>
 import { mapMutations } from 'vuex'
-import CityList from '../components/CityList.vue'
+import cityList from '@/components/home/cityList.vue'
+import swiper from '@/components/home/swiper.vue'
 export default {
 	data () {
 		return {
       selnav: true,
-      moveDistance: '5%'
+      moveDistance: '5%',
+      imgs: []
 		}
 	},
 	components: {
-    CityList
-	},
+    cityList,
+    swiper
+  },
+  created () {
+    this.pushLoadStack()
+    this.$axios.get('/movie/swiper')
+      .then( response => {
+        let data = response.data
+        this.imgs = data.data.data.returnValue
+      })
+      .then(this.completeLoad)
+  },
 	methods: {
 		...mapMutations({
-      showCityList: 'city/showCityList'
+      showCityList: 'city/showCityList',
+      pushLoadStack: 'loading/pushLoadStack',
+      completeLoad: 'loading/completeLoad'
     }),
     moveTab() {
       this.selnav = !this.selnav
       this.moveDistance = this.selnav? '5%' : '55%'
     }
-	},
-	created () {
 	}
 }
 </script>

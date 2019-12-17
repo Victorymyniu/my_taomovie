@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import FooterNav from './components/FooterNav.vue'
+import footerNav from './components/footerNav'
 export default {
   name: 'app',
   data () {
@@ -18,7 +18,7 @@ export default {
     }
   },
   components: {
-    FooterNav
+    footerNav
   },
   watch: {
      // 如果路由有变化，会执行该方法
