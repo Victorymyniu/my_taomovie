@@ -13,7 +13,7 @@
 </template>
 
 <script>
-// import cityData from "@/assets/city.json"
+import { mapActions, mapMutations } from 'vuex'
 export default {
   name: 'CityIndexList',
   data () {
@@ -22,9 +22,17 @@ export default {
     }
   },
   created (){
+    this.updateCityAsync({city: {}})
     this.getCityInfo()
   },
   methods: {
+    ...mapActions({
+      updateCityAsync: 'city/updateCityAsync'
+    }),
+    ...mapMutations({
+      pushLoadStack: 'loading/pushLoadStack',
+      completeLoad: 'loading/completeLoad'
+    }),
     getCityInfo() {
       this.$axios.get('/movie/city')
       .then( response => {
@@ -59,13 +67,35 @@ export default {
       })
     },
     selectedCity(name) {
-      console.log(name)
-      this.$store.commit("city/selectedCity", name)
-      this.$store.commit("city/closeCityList")
+      if (name) {
+        this.changeCityData({
+          city: {
+            name: name,
+            rN: this.matchCityRn(name)
+          }}
+        )
+      } else {
+        return false
+      }
     },
     closeCityList() {
-      this.$store.commit("city/closeCityList")
+      this.changeCityData({city: {}})
+    },
+    changeCityData(data) {
+      this.pushLoadStack()
       this.$refs.city.className = "fadeOutTop"
+      this.updateCityAsync(data).then(this.completeLoad)
+    },
+    matchCityRn(name) {
+      const randomList = ['bj','sh','gz']
+      // 随机生成数组中的一个元素
+      const randomCity = randomList[Math.floor(3*Math.random())]
+      switch(name) {
+         case '北京': return 'bj'
+         case '上海': return 'sh'
+         case '广州': return 'gz'
+         default: return randomCity
+      }
     }
   }
 }

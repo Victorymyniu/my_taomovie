@@ -1,45 +1,48 @@
 import { UPDATECITY } from './mutation-type'
+import Vue from 'vue'
+import axios from 'axios'
 const state = {
   name: '北京',
-  show: false
+  show: false,
+  rN: 'bj',
+  data: []
 }
 
 const getters = {
-  count: state => {
-    return state.count;
-  }
+  hotLists: state => state.data,
+	cityName: state => state.name
 }
 
 const mutations = {
   [UPDATECITY] (state, { city }) {
-  	// if (city.name) {
-  	// 	state.name = city.name
-  	// 	state.data = city.data 
-    //   state.rN = city.rN
-  	// }
+  	if (city.name) {
+  		state.name = city.name
+  		state.data = city.data 
+      state.rN = city.rN
+    }
+    console.log(state.data)
   	state.show = false
   },
   showCityList (state) {
   	state.show = true
-  },
-  closeCityList (state) {
-  	state.show = false
-  },
-  selectedCity (state, name) {
-  	state.name = name
   }
 }
 
 const actions = {
-  incrementCountAsync({ commit }) {
-    setTimeout(() => {
-      commit('incrementCount');
-    }, 2000);
-  },
-  decrementCountAsync({ commit }, payload) {
-    setTimeout(() => {
-      commit('decrementCount', payload);
-    }, 1000);
+  updateCityAsync ({ commit, state }, {city}) {
+    if (!city.name) {
+      city.name = state.name
+      city.rN = state.rN
+    }
+    return axios.get(`/movie/hot/?city=${city.rN}`).then((response) => {
+      let data = response.data
+      let lists = data.data.data.returnValue
+      lists.forEach((item, index) => {
+        item.mID = index  
+      })
+      city.data  = lists
+  		commit(UPDATECITY, { city })
+    })
   }
 }
 

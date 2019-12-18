@@ -15,6 +15,7 @@
     <section>
       <div v-show="selnav"  class="content">
         <swiper :imgs="imgs"></swiper>
+        <hot-movie :hotLists="hotLists"></hot-movie>
       </div>
       <div v-show="!selnav"  class="content">
         即将上映
@@ -24,9 +25,10 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import cityList from '@/components/home/cityList.vue'
 import swiper from '@/components/home/swiper.vue'
+import hotMovie from '@/components/home/hotMovie.vue'
 export default {
 	data () {
 		return {
@@ -37,8 +39,12 @@ export default {
 	},
 	components: {
     cityList,
-    swiper
+    swiper,
+    hotMovie
   },
+  computed: mapGetters({
+    hotLists: 'city/hotLists'
+  }),
   created () {
     this.pushLoadStack()
     this.$axios.get('/movie/swiper')
@@ -47,6 +53,9 @@ export default {
         this.imgs = data.data.data.returnValue
       })
       .then(this.completeLoad)
+      .catch(error => {
+        console.log(error);
+      })
   },
 	methods: {
 		...mapMutations({

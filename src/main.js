@@ -10,8 +10,9 @@ import Mint from 'mint-ui'
 import animated from 'animate.css' // npm install animate.css --save安装，再引入
 import 'mint-ui/lib/style.css'
 import './assets/css/common.css'
-// import 'assets/css/swiper.min.css'
+import LazyLoad from './assets/js/lazyload'
 
+Vue.use(LazyLoad)
 Vue.config.productionTip = false
 Vue.prototype.$axios = axios
 Vue.use(animated)
