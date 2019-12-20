@@ -1,28 +1,30 @@
 <template>
 	<div id="hot">
     <ul>
-      <li class="" v-for="(item, index) in hotLists" :key="index">
-        <div class="fl movie-img">
+      <li :class="{'border-bottom': hotLists.length-1 != index}" v-for="(item, index) in hotLists" :key="index">
+        <div class="movie-img fl">
           <img v-lazyload="`https://gw.alicdn.com/${item.poster}`">
           <div class="play-icon">
   					<img src="https://gw.alicdn.com/tps/TB1PH2uLXXXXXaLaXXXXXXXXXXX-60-60.png" alt="">
   				</div>
         </div>
-        <div class="movie-des">
-          <div class="m-info">
-            <div class="m-name">
-              <h2 class="f16 ellipsis">{{ item.showName }}</h2>
-              <div class="vm type-3dimax" v-if="item.showMark == 'IMAX3D'"></div>
-							<div class="vm type-imax" v-if="item.showMark == 'IMAX'"></div>
-							<div class="vm type-3d" v-if="item.showMark == '3D'"></div>
+        <div class="movie-des border-bottom">
+          <router-link to="">
+            <div class="m-info">
+              <div class="m-name">
+                <h2 class="f16 tddd">{{ item.showName }}</h2>
+                <div class="vm type-3dimax" v-if="item.showMark == 'IMAX3D'"></div>
+                <div class="vm type-imax" v-if="item.showMark == 'IMAX'"></div>
+                <div class="vm type-3d" v-if="item.showMark == '3D'"></div>
+              </div>
+              <div class="full-star pr">
+                <div class="score-star" :style="{width: `${item.remark * 10}%`}"></div>
+                <span class="score pa">{{ item.remark }}</span>
+              </div>
+              <p>{{ item.highlight }}</p>
+              <p>{{ item.leadingRole}}</p>
             </div>
-            <div class="full-star pr">
-							<div class="score-star" :style="{width: `${item.remark * 10}%`}"></div>
-							<span class="score pa">{{ item.remark }}</span>
-						</div>
-            <p>{{ item.highlight }}</p>
-						<p>{{ item.leadingRole}}</p>
-          </div>
+          </router-link>
           <div class="m-buy fr">
             <button class="buy-btn f12" v-if="item.openTime < '2016-12-09'">购买</button>
             <button class="forward-buy-btn f12" v-else>预售</button>
@@ -61,16 +63,12 @@ export default{
   background: #fff;
   li{
     padding-top: 15px;
-    // display: flex;
+    
     .movie-img{
       width: 65px;
       height: 90px;
       position: relative;
       margin-right: 10px;
-      img{
-        width: 100%;
-        height: 100%;
-      }
       .play-icon{
         width: 17px;
         height: 17px;
@@ -85,14 +83,17 @@ export default{
       }
     }
     .movie-des{
-      // margin-left: 10px;
       padding: 0 15px 23px 0;
       box-sizing: border-box;
       display: flex;
       justify-content: space-between;
-      // flex:1;
-      .m-info{
+      flex:1;
+      overflow: hidden;
+      a{
         flex:1;
+        overflow: hidden;
+      }
+      .m-info{
         .m-name {
           height: 20px;
           color: #333;
@@ -100,86 +101,98 @@ export default{
           align-items: flex-end;
           h2 {
             margin-top: 3px;
-            // max-width: 68%;
             display: inline-block;
+            max-width:60%;
+          }
+          .type-3d {
+            margin-top: 5px;
+            width: 17px;
+            height: 17px;
+            background-image: url('../../assets/images/3d.svg');
+          }
+          .type-imax {
+            margin-top: 5px;
+            width: 27px;
+            height: 15px;
+            background-image: url('../../assets/images/imax.svg');
+          }
+          .type-3dimax {
+            margin-top: 5px;
+            width: 45px;
+            height: 17px;
+            background-image: url('../../assets/images/3dimax.svg');
+          }
+          .type-3d,
+          .type-imax,
+          .type-3dimax {
+            margin-left: 5px;
+            background-size: 100%;
+            background-repeat: no-repeat;
           }
         }
+        .full-star {
+          margin-top: 7px;
+          width: 50px;
+          height: 10px;
+          background-size: auto 100%;
+          background-image: url('../../assets/images/nostart.svg');
+          .score-star {
+            width: 100%;
+            height: 100%;
+            background-size: auto 100%;
+            background-image: url('../../assets/images/star.svg');
+          }
+          .score {
+            right: -21px;
+            top: -1px;
+            font-size: 10px;
+            color: #9c9c9c;
+          }
+        }
+        p:nth-of-type(1) {
+          margin-top: 12px;
+        }
+        p:nth-of-type(2) {
+          margin-top: 6px;
+        }
+        p {
+          font-size: 13px;
+          color: #9c9c9c;
+          width:100%;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
       }
-    }
-    .m-buy {
-      margin-top: 30px;
-    }
-    .buy-btn,
-    .forward-buy-btn {
-      height: 24px;
-      width: 45px;
-      line-height: 20px;
-      text-align: center;
-      background-color: #fff;
-      outline: none;
-      border-radius: 3px;
-      font-weight: bold;
-    }
-    .buy-btn {
-      border: 1px solid #ff4d64;
-      color: #ff4d64;
-    }
-    .forward-buy-btn  {
-      border: 1px solid #37b7ff;
-      color: #37b7ff;
-    }
-    .full-star {
-      margin-top: 7px;
-      width: 50px;
-      height: 10px;
-      background-size: auto 100%;
-      background-image: url('../../assets/images/nostart.svg');
-    }
-    .score-star {
-      width: 100%;
-      height: 100%;
-      background-size: auto 100%;
-      background-image: url('../../assets/images/star.svg');
-    }
-    .score {
-      right: -21px;
-      top: -1px;
-      font-size: 10px;
-      color: #9c9c9c;
-    }
-    // .m-info {
-    //   flex:1;
-    // }
-    // .m-info h2 {
-    //   margin-top: 3px;
-    //   max-width: 68%;
-    //   display: inline-block;
-    // }
-    // .m-info span {
-    //   display: inline-block;
-    // }
-    .m-info p:nth-of-type(1) {
-      margin-top: 12px;
-    }
-    .m-info p:nth-of-type(2) {
-      margin-top: 6px;
-    }
-    .m-info p {
-      font-size: 13px;
-      color: #9c9c9c;
-      // width:100%;
-      // text-overflow: ellipsis;
-      // white-space: nowrap;
-      // overflow: hidden;
+      .m-buy {
+        margin-top: 30px;
+        .buy-btn,
+        .forward-buy-btn {
+          height: 24px;
+          width: 45px;
+          line-height: 20px;
+          text-align: center;
+          background-color: #fff;
+          outline: none;
+          border-radius: 3px;
+          font-weight: bold;
+        }
+        .buy-btn {
+          border: 1px solid #ff4d64;
+          color: #ff4d64;
+        }
+        .forward-buy-btn  {
+          border: 1px solid #37b7ff;
+          color: #37b7ff;
+        }
+      }
     }
     .m-act {
       display: -webkit-flex; /* Safari */
       display: flex;
       flex-direction: row;
       flex-wrap: nowrap;
-      margin-top: 8px;
-      margin-right: 15px;
-      margin-left: 76px;
+      margin: 8px 15px 0 76px;
       padding-bottom: 8px;
     }
     .m-act span:first-child {
@@ -194,41 +207,6 @@ export default{
       width: 50%;
       display: inline-block;
     }
-    .m-name {
-      height: 20px;
-      color: #333;
-    }
-    .type-3d {
-      margin-top: 5px;
-      width: 17px;
-      height: 17px;
-      background-image: url('../../assets/images/3d.svg');
-    }
-    .type-imax {
-      margin-top: 5px;
-      width: 27px;
-      height: 15px;
-      background-image: url('../../assets/images/imax.svg');
-    }
-    .type-3dimax {
-      margin-top: 5px;
-      width: 45px;
-      height: 17px;
-      background-image: url('../../assets/images/3dimax.svg');
-    }
-    .type-3d,
-    .type-imax,
-    .type-3dimax {
-      margin-left: 5px;
-      background-size: 100%;
-      background-repeat: no-repeat;
-      // float: left;
-    }
-  }
-  .ellipsis {
-    text-overflow: ellipsis;
-    white-space: wrap;
-    overflow: hidden;
   }
 }
 </style>

@@ -18,7 +18,7 @@
         <hot-movie :hotLists="hotLists"></hot-movie>
       </div>
       <div v-show="!selnav"  class="content">
-        即将上映
+        <coming-movie :comingLists="comingLists"></coming-movie>
       </div>
     </section>
   </div>
@@ -29,33 +29,45 @@ import { mapGetters, mapMutations } from 'vuex'
 import cityList from '@/components/home/cityList.vue'
 import swiper from '@/components/home/swiper.vue'
 import hotMovie from '@/components/home/hotMovie.vue'
+import comingMovie from '@/components/home/comingMovie.vue'
 export default {
 	data () {
 		return {
       selnav: true,
       moveDistance: '5%',
-      imgs: []
+      imgs: [],
+      comingLists: [],
+      offset: 0,
+      limit: 20,
+      total: 0
 		}
 	},
 	components: {
     cityList,
     swiper,
-    hotMovie
+    hotMovie,
+    comingMovie
   },
   computed: mapGetters({
     hotLists: 'city/hotLists'
   }),
   created () {
-    this.pushLoadStack()
-    this.$axios.get('/movie/swiper')
-      .then( response => {
-        let data = response.data
-        this.imgs = data.data.data.returnValue
+    this.requestData('/movie/swiper', (response) => {
+      let data = response.data
+      this.imgs = data.data.data.returnValue
+    })
+    this.requestData(`/movie/coming/?limit=${this.limit}&offset=${this.offset}`, (response) => {
+      let data = response.data
+      let lists = data.data.data.returnValue
+      lists.forEach((item, index) => {
+        item.mID = index
       })
-      .then(this.completeLoad)
-      .catch(error => {
-        console.log(error);
-      })
+      console.log(lists)
+      this.loaingLists = lists
+      this.total = data.total
+      this.comingLists = this.sortComingData(lists)
+      this.offset = this.offset + this.limit
+    })
   },
 	methods: {
 		...mapMutations({
@@ -66,6 +78,34 @@ export default {
     moveTab() {
       this.selnav = !this.selnav
       this.moveDistance = this.selnav? '5%' : '55%'
+    },
+    requestData (url, fn) {
+      this.pushLoadStack()
+      this.$axios.get(url).then(fn).then(this.completeLoad)
+    },
+    sortComingData(lists) {
+      let comingLists = []
+      lists.forEach((item)=>{
+        for (let i = 0; i < comingLists.length; i++) {
+          if (item.openTime === comingLists[i].openTime) {
+            console.log(comingLists[i].openTime)
+            comingLists[i].movies.push(item)
+            return
+          }
+        }
+        let comingItem = {
+          openTime: item.openTime,
+          day: this.matchWeek(new Date(item.openTime).getDay()),
+          movies: [] 
+        }
+        comingItem.movies.push(item)
+        comingLists.push(comingItem)
+      })
+      return comingLists
+    },
+    matchWeek(num) {
+      let weeks = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+      return weeks[num]
     }
 	}
 }
