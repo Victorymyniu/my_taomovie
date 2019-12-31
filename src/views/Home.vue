@@ -19,6 +19,14 @@
       </div>
       <div v-show="!selnav"  class="content">
         <coming-movie :comingLists="comingLists"></coming-movie>
+        <div class="click-load-more" @click="clickLoadMore">
+          <span v-show="clickLoadStatus === 'start'">点击查看更多</span>
+          <div v-show="clickLoadStatus === 'loading'" class="loading-icon">
+            <span>加载中</span>
+            <mt-spinner style="display: inline-block" type="triple-bounce" color="rgb(38, 162, 255)" :size="20"></mt-spinner>
+          </div>
+          <span v-show="clickLoadStatus === 'complete'">已经全部显示</span>
+        </div>
       </div>
     </section>
   </div>
@@ -37,6 +45,8 @@ export default {
       moveDistance: '5%',
       imgs: [],
       comingLists: [],
+      loadingLists: [],
+      clickLoadStatus: 'start',
       offset: 0,
       limit: 20,
       total: 0
@@ -52,6 +62,7 @@ export default {
     hotLists: 'city/hotLists'
   }),
   created () {
+    this.pushComingList({lists: []})
     this.requestData('/movie/swiper', (response) => {
       let data = response.data
       this.imgs = data.data.data.returnValue
@@ -59,11 +70,11 @@ export default {
     this.requestData(`/movie/coming/?limit=${this.limit}&offset=${this.offset}`, (response) => {
       let data = response.data
       let lists = data.data.data.returnValue
+      //模拟索引数据的id号
       lists.forEach((item, index) => {
         item.mID = index
       })
-      console.log(lists)
-      this.loaingLists = lists
+      this.loadingLists = lists
       this.total = data.total
       this.comingLists = this.sortComingData(lists)
       this.offset = this.offset + this.limit
@@ -73,22 +84,51 @@ export default {
 		...mapMutations({
       showCityList: 'city/showCityList',
       pushLoadStack: 'loading/pushLoadStack',
-      completeLoad: 'loading/completeLoad'
+      completeLoad: 'loading/completeLoad',
+      pushComingList: 'coming/pushComingList'
     }),
     moveTab() {
       this.selnav = !this.selnav
       this.moveDistance = this.selnav? '5%' : '55%'
+      if (this.selnav) {
+        this.pushComingList({lists: []})
+      } else {
+        this.pushComingList({lists: this.loaingLists})
+      }
     },
     requestData (url, fn) {
       this.pushLoadStack()
       this.$axios.get(url).then(fn).then(this.completeLoad)
+    },
+    clickLoadMore() {
+      if (this.clickLoadStatus != 'complete') {
+        this.clickLoadStatus = 'loading'
+        setTimeout(() => {
+          this.$axios.get(`/movie/coming/?limit=${this.limit}&offset=${this.offset}`).then((response) => {
+            let data = response.data
+            let lists = data.data.data.returnValue
+            this.loadingLists = this.loadingLists.concat(lists)
+            //模拟索引数据的id号
+            this.loadingLists.forEach((item, index) => {
+              item.mID = index
+            })
+            this.pushComingList({lists: this.loaingLists})
+            this.comingLists = this.sortComingData(this.loadingLists)
+            this.offset = this.offset + this.limit
+            if (this.offset < this.total) {
+              this.clickLoadStatus = 'start'
+            } else {
+              this.clickLoadStatus = 'complete'
+            }
+          })
+        }, 500)
+      }
     },
     sortComingData(lists) {
       let comingLists = []
       lists.forEach((item)=>{
         for (let i = 0; i < comingLists.length; i++) {
           if (item.openTime === comingLists[i].openTime) {
-            console.log(comingLists[i].openTime)
             comingLists[i].movies.push(item)
             return
           }
@@ -96,7 +136,7 @@ export default {
         let comingItem = {
           openTime: item.openTime,
           day: this.matchWeek(new Date(item.openTime).getDay()),
-          movies: [] 
+          movies: []
         }
         comingItem.movies.push(item)
         comingLists.push(comingItem)
@@ -123,6 +163,7 @@ export default {
   line-height: 40px;
   text-align: center;
   display: inline-block;
+  font-size: 14px;
 }
 .city-arrow-icon {
   margin-left: 4px;
@@ -153,6 +194,7 @@ export default {
     display: table-cell;
     line-height: 40px;
     text-align: center;
+    font-size:14px;
   }
   span{
     position:absolute;
@@ -168,5 +210,17 @@ export default {
 }
 .content {
   margin-bottom: 58px;
+}
+.click-load-more {
+  height: 42px;
+  line-height: 42px;
+  text-align: center;
+  color: #333;
+  font-size: 15px;
+  background-color: #fff;
+  margin: 5px 0 8px;
+}
+.loading-icon span {
+  vertical-align: middle;
 }
 </style>

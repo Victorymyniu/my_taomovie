@@ -31,9 +31,9 @@
         </li>
       </ul>
     </div>
-    <div>
+    <!-- <div>
       <button @click="returnTop" style="position:absolute;bottom:10px;left:0">返回顶部</button>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -51,10 +51,10 @@ export default{
   	}
   },
   methods: {
-    returnTop() {
-      var element = document.getElementById("coming");
-      element.scrollIntoView()
-    }
+    // returnTop() {
+    //   var element = document.getElementById("coming");
+    //   element.scrollIntoView()
+    // }
   }
 }
 </script>

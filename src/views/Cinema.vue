@@ -1,22 +1,25 @@
 <template>
 	<section id="cinema">
-		<!-- <city></city>
-		<cinemaArea></cinemaArea>
-		<cinema></cinema> -->
-		影院页面
+		<city-list></city-list>
+		<movie-area></movie-area>
+		<cinema></cinema>
 	</section>
 </template>
 
 <script>
 // import { mapMutations } from 'vuex'
-// import { cinema, cinemaArea, city } from '../components/'
+import movieArea from '@/components/cinema/movieArea.vue'
+import cinema from '@/components/cinema/cinema.vue'
+import cityList from '@/components/home/cityList.vue'
 export default{
 	data () {
 		return {
 		}
 	},
 	components: {
-		// cinema,
+		movieArea,
+		cityList,
+		cinema
 		// cinemaArea,
 		// city
 	},

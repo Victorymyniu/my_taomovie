@@ -15,7 +15,7 @@
 <script>
 import { mapActions, mapMutations } from 'vuex'
 export default {
-  name: 'CityIndexList',
+  name: 'CityList',
   data () {
     return {
       cityList: []
@@ -102,6 +102,18 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.mint-indicator-wrapper {
+	z-index: 1000
+}
+#select-city {
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 9999999;
+  background-color: #fff;
+  position: fixed;
+}
 .city-header {
   height: 46px;
   line-height: 46px;
